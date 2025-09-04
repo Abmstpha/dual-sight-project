@@ -34,21 +34,71 @@ This model is designed for:
 - **Social Media Moderation:** Automatically flagging images that are likely AI-generated.
 - **Content Analysis:** Assisting researchers in understanding the prevalence of AI art versus real images in digital media.
 
+## Project Structure
+```
+project/
+├── src/
+│   ├── __init__.py          # Package initialization
+│   ├── model.py             # MultiTaskModel architecture
+│   ├── data_loader.py       # Data loading and preprocessing
+│   ├── train.py             # Training script and functions
+│   └── inference.py         # Inference and prediction classes
+├── notebooks/
+│   └── yolloplusclassproject.ipynb  # Original training notebook
+├── assets/
+│   ├── andrejAI.png         # Sample AI-generated image
+│   ├── andrejreal.jpeg      # Sample real image
+│   └── logo.png             # Project logo
+├── data/
+│   └── obj_label_mapping.json  # Object class mappings
+├── docs/
+│   └── Dualsight_slides.pdf    # Project presentation
+├── models/                  # Trained models save here
+├── logs/                    # Training logs save here
+├── app.py                   # Gradio web interface
+├── requirements.txt         # Dependencies
+└── README.md               # This file
+```
+
 ## How to Use
-You can use this model locally or via the provided Hugging Face Space. For local usage, load the state dictionary into the model architecture using PyTorch. For example:
+
+### Option 1: Use the Gradio Web Interface
+Run the interactive web app:
+```bash
+python app.py
+```
+
+### Option 2: Use the Modular API
 ```python
 import torch
-from model import MultiTaskModel  # Your model definition
+from src.inference import load_predictor
 
-# Instantiate your model architecture (must match training)
-model = MultiTaskModel(...)
+# Load the predictor
+predictor = load_predictor(
+    model_path="path/to/weights.pth",
+    obj_label_mapping_path="data/obj_label_mapping.json",
+    num_obj_classes=494
+)
 
-
-# Load the saved state dictionary (trained weights)
-model.load_state_dict(torch.load("DualSight.pth", map_location="cpu"))
-model.eval()
+# Make predictions
+result = predictor.predict("path/to/image.jpg")
+print(result["formatted_prediction"])
 ```
-Alternatively, you can test the model directly via our interactive demo:
+
+### Option 3: Train Your Own Model
+```python
+from src.train import train_model
+
+# Train the model
+model = train_model(
+    dataset_name="your_dataset",
+    num_obj_classes=494,
+    epochs=35,
+    batch_size=32
+)
+```
+
+### Option 4: Test Online Demo
 [Test the Model Here(CLICK)](https://huggingface.co/spaces/Abdu07/DualSight-Demo)  
 
 ## Training Data and Evaluation
